@@ -7,14 +7,13 @@ const store = createStore({
         return {
             signInRes: "",
             cart: [],
-            products: null,
             toast: {
                 text: "",
                 show: false
             }
         }
     },
-    plugins: [createPersistedState()],
+    plugins: [createPersistedState({ storage: window.sessionStorage })],
     getters: {
         cartSize: (state) => {
             return state.cart.length;
@@ -44,37 +43,38 @@ const store = createStore({
                 state.signInRes = JSON.parse(sessionStorage.getItem("userInfo"));
             }
         },
-        addToCart: (state, productItem) => {
-            let cartProduct = state.cart.find((product) => product.id === productItem.id);
+        addToCart: (state, productId) => {
+            let cartProduct = state.cart.find((product) => product.id === productId.id);
             if (cartProduct) {
                 state.toast.show = true;
                 state.toast.text = "already added in cart";
             } else {
                 state.cart.push({
-                    ...productItem,
-                    stock: productItem.quantity,
+                    ...productId,
+                    stock: productId.quantity,
                     quantity: 1,
                 });
                 state.toast.show = true;
                 state.toast.text = "added to cart";
             }
         },
-        incrementQuantity: (state, productItem) => {
-            let cartProduct = state.cart.find((product) => product.id === productItem);
+        addFromCart: (state, productId) => {
+            let cartProduct = state.cart.find((product) => product.id === productId);
             if (cartProduct) {
                 cartProduct.quantity++;
             }
         },
         removeFromCart: (state, productId) => {
-            let product = state.products.find((product) => product.id === productId);
+            //let product = state.products.find((product) => product.id === productId);
             let cartProduct = state.cart.find((product) => product.id === productId);
+            // cartProduct.quantity--;
             cartProduct.quantity--;
-            product.quantity++;
         },
         deleteFromCart: (state, productId) => {
-            let product = state.products.find((product) => product.id === productId);
+           //let product = state.products.find((product) => product.id === productId);
+            let cartProduct = state.cart.find((product) => product.id === productId);
             let cartProductIndex = state.cart.findIndex((product) => product.id === productId);
-            product.quantity = state.cart[cartProductIndex].stock;
+            cartProduct.quantity = state.cart[cartProductIndex].stock;
             state.cart.splice(cartProductIndex, 1);
         },
         showToast: (state, toastText) => {
@@ -87,11 +87,11 @@ const store = createStore({
         }
     },
     actions: {
-        addToCart: ({ commit }, productItem) => {
-            commit("addToCart", productItem);
+        addToCart: ({ commit }, productId) => {
+            commit("addToCart", productId);
         },
-        incrementQuantity: ({ commit }, productId) => {
-            commit("incrementQuantity", productId);
+        addFromCart: ({ commit }, productId) => {
+            commit("addFromCart", productId);
         },
         removeFromCart: ({ commit }, productId) => {
             commit("removeFromCart", productId);

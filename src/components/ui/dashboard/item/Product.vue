@@ -23,14 +23,51 @@
                     <td>{{product.price}}</td>
                     <td>{{product.quantity}}</td>
                     <td>{{product.discount}}</td>
-                    <td class="text-danger"><i class="fa fa-edit"></i><span class="ms-2"><i class="fa fa-trash" aria-hidden="true"></i></span></td>
+                    <td class="text-danger"><span data-bs-toggle="modal" data-bs-target="#exampleModal"><i class="fa fa-edit"></i></span><span class="ms-2"><i class="fa fa-trash" aria-hidden="true"></i></span></td>
                     </tr>
                 </tbody>
                 </table>           
             </div>
           </div>
+          <!-- Modal -->
+          <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="col-12 my-3">
+                <input type="text" v-model="name" class="form-control" placeholder="Name" required/>
+              </div>
+              <div class="col-12 my-3">
+                <input type="text" v-model="description" class="form-control" placeholder="Description" required/>
+              </div>
+              <div class="col-12 my-3">
+                <select class="form-select" v-model="inventory_id" aria-label="Default select example">
+                  <option disabled value="">Please select quantity</option>
+                  <option v-for="(inventory,index) in inventories" v-bind:value="inventory.id" :key="index">{{ inventory.quantity }}</option>
+              </select>
+              </div>
+              <div class="col-12 my-3">
+                <input type="number" v-model="price" class="form-control" placeholder="Price" required/>
+              </div>
+              <div class="col-12 my-3">
+                <select class="form-select" v-model="discount_id" aria-label="Default select example">
+                  <option disabled value="">Please select discount</option>
+                  <option v-for="(discount,index) in discounts" v-bind:value="discount.id" :key="index">{{ discount.discount_percent }}</option>
+              </select>
+              </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+                </div>
+            </div>
+            </div>
     </div>
-    
 </template>
 <script>
 import axios from 'axios';
@@ -40,6 +77,8 @@ export default {
     name: "Product",
     data: () => ({
         products: [],
+        inventories: [],
+        discounts: []
     }),
     methods: {
         async product() {
@@ -48,13 +87,29 @@ export default {
                 // console.log(result.data); 
                 this.products = result.data;
             }
-        }
+        },
+        async inventory() {
+            const result = await axios.get(api.inventory, { headers: { Authorization: 'Bearer ' + this.$store.state.signInRes.token } })
+            if (result.status === 200) {
+                this.inventories = result.data;
+            }
+            console.warn(result)
+        },
+        async discount() {
+            const result = await axios.get(api.discount, { headers: { Authorization: 'Bearer ' + this.$store.state.signInRes.token } })
+            if (result.status === 200) {
+                this.discounts = result.data;
+            }
+            console.warn(result)
+        },
     },
     async mounted() {
         this.product();
+        this.inventory();
+        this.discount();
     }
 }
 </script>
-<style lang="">
-    
+<style scoped>
+
 </style>

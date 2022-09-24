@@ -35,7 +35,7 @@
                   </button>
                   <span class="mx-2">{{product.quantity}}</span>
                   <button 
-                      @click="incrementQuantity(product.id)" 
+                      @click="addFromCart(product.id)" 
                       :disabled="product.quantity === product.stock"
                       class="btn btn-outline-success btn-sm">
                       +
@@ -76,8 +76,8 @@ export default {
         ])
     },
     methods: {
-        incrementQuantity(id) {
-            this.$store.dispatch("incrementQuantity", id);
+        addFromCart(id) {
+            this.$store.dispatch("addFromCart", id);
         },
         removeFromCart(id) {
             this.$store.dispatch("removeFromCart", id);

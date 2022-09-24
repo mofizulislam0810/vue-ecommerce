@@ -48,8 +48,9 @@ export default {
     color: white;
     position: fixed;
     bottom: 0;
-    left: 100%;
-    transform: translateX(-100%);
+    right: 97%;
+    transform: translateX(97%);
+    z-index: 1000;
 
 }
 </style>

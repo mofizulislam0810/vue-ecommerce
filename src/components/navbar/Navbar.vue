@@ -23,7 +23,7 @@
                 <router-link class="nav-link" to="">{{$store.state.signInRes.username}}</router-link>
                 </li>
                 <li class="nav-item" v-if="$store.state.signInRes.token">
-                <a class="nav-link" @click="signOut()">SignOut</a>
+                  <a class="nav-link" @click="signOut()">SignOut</a>
                 </li>
                 <li class="nav-item">
                 <span class="nav-link text-white" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight"><i class="fas fa-cart-arrow-down"></i><span><sup class="text-white fw-bold ms-1">{{cartSize}}</sup></span></span>
@@ -60,6 +60,6 @@ span sup {
 
 a {
     color: white !important;
-    ;
+    cursor: pointer;
 }
 </style>
