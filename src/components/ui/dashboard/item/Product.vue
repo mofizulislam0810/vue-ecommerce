@@ -23,7 +23,7 @@
                     <td>{{product.price}}</td>
                     <td>{{product.quantity}}</td>
                     <td>{{product.discount}}</td>
-                    <td class="text-danger"><span data-bs-toggle="modal" data-bs-target="#exampleModal"><i class="fa fa-edit"></i></span><span class="ms-2"><i class="fa fa-trash" aria-hidden="true"></i></span></td>
+                    <td class="text-danger"><span data-bs-toggle="modal" data-bs-target="#exampleModal" @click="getItem(product)"><i class="fa fa-edit"></i></span><span class="ms-2" @click="deleteProduct(product)"><i class="fa fa-trash" aria-hidden="true"></i></span></td>
                     </tr>
                 </tbody>
                 </table>           
@@ -59,10 +59,13 @@
                   <option v-for="(discount,index) in discounts" v-bind:value="discount.id" :key="index">{{ discount.discount_percent }}</option>
               </select>
               </div>
+              <div class="col-12 my-3">
+                <input type="text" v-model="image" class="form-control" placeholder="Image" required/>
+              </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save changes</button>
+                    <button type="button" class="btn btn-outline-danger btn-sm rounded" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-outline-danger btn-sm rounded" @click="editProduct(item)">Save changes</button>
                 </div>
                 </div>
             </div>
@@ -76,9 +79,17 @@ import { api } from '../../../../api/api'
 export default {
     name: "Product",
     data: () => ({
+        id: "",
+        name: '',
+        description: '',
+        category_id: '',
+        inventory_id: '',
+        price: '',
+        discount_id: '',
+        image: '',
         products: [],
         inventories: [],
-        discounts: []
+        discounts: [],
     }),
     methods: {
         async product() {
@@ -102,6 +113,50 @@ export default {
             }
             console.warn(result)
         },
+        getItem(item) {
+            this.id = item.id;
+            this.name = item.name;
+            this.description = item.description;
+            // category_id: '',
+            this.inventory_id = item.inventory_id;
+            this.price = item.price;
+            this.discount_id = item.discount_id;
+            this.image = item.image
+        },
+        async editProduct() {
+            const result = await axios.put(api.product, {
+                id: this.id,
+                name: this.name,
+                description: this.description,
+                inventory_id: this.inventory_id,
+                price: this.price,
+                discount_id: this.discount_id,
+                image: this.image
+            }, { headers: { Authorization: 'Bearer ' + this.$store.state.signInRes.token } })
+            if (result.status === 200) {
+                this.name = "";
+                this.description = "";
+                this.inventory_id = "";
+                this.price = "";
+                this.discount_id = "";
+                this.image = ""
+                alert('Product Edited Successfully!')
+                this.product();
+            }
+            console.warn(result)
+        },
+
+        async deleteProduct(item) {
+            const res = window.confirm("Are you sure for delete this product?");
+            if (res) {
+                const result = await axios.delete(api.product + '?Id=' + item.id, { headers: { Authorization: 'Bearer ' + this.$store.state.signInRes.token } })
+                if (result.status === 200) {
+                    // console.log(result.data); 
+                    alert("Delete successfully");
+                    this.product();
+                }
+            }
+        }
     },
     async mounted() {
         this.product();
